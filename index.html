@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indkøbscenter Lys</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .login-box {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .bulb-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      letter-spacing: 0.2em;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="password"]:focus {
+      border-color: #f59e0b;
+    }
+
+    button.login-btn {
+      width: 100%;
+      padding: 0.85rem;
+      background: #f59e0b;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button.login-btn:hover { background: #fbbf24; }
+
+    .error {
+      color: #f87171;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      min-height: 1.2rem;
+    }
+
+    /* === DASHBOARD (skjult til efter login) === */
+    #dashboard {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .top-bar h2 { font-size: 1.2rem; font-weight: 600; }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid #333;
+      color: #888;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .master-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .master-card h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+
+    .big-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .big-btn {
+      padding: 1rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .big-btn:active { opacity: 0.7; }
+    .btn-on  { background: #f59e0b; color: #000; }
+    .btn-off { background: #27272a; color: #fff; }
+
+    .brightness-row {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brightness-row label { font-size: 0.85rem; color: #888; white-space: nowrap; }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: #f59e0b;
+      height: 4px;
+    }
+
+    .brightness-val {
+      font-size: 0.85rem;
+      font-weight: 600;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+      margin: 1.5rem 0 0.75rem;
+    }
+
+    .zone-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .zone-card:hover { border-color: #f59e0b44; }
+
+    .zone-info { display: flex; flex-direction: column; gap: 2px; }
+    .zone-name { font-size: 1rem; font-weight: 500; }
+    .zone-sub  { font-size: 0.8rem; color: #666; }
+
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toggle {
+      width: 44px; height: 24px;
+      background: #333;
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle.on { background: #f59e0b; }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: transform 0.2s;
+    }
+
+    .toggle.on::after { transform: translateX(20px); }
+
+    .arrow { color: #444; font-size: 1.1rem; margin-left: 0.5rem; }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #f59e0b;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .status-dot.off { background: #444; }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN SKÆRM -->
+  <div class="login-box" id="login-screen">
+    <div class="bulb-icon">💡</div>
+    <h1>Lysstyring</h1>
+    <p class="subtitle">Indkøbscenter — adgang kræver kode</p>
+    <input type="password" id="password-input" placeholder="Indtast adgangskode" />
+    <button class="login-btn" onclick="checkPassword()">Log ind</button>
+    <p class="error" id="error-msg"></p>
+  </div>
+
+  <!-- DASHBOARD (vises efter login) -->
+  <div id="dashboard">
+
+    <div class="top-bar">
+      <h2>💡 Lysstyring</h2>
+      <button class="logout-btn" onclick="logout()">Log ud</button>
+    </div>
+
+    <!-- MASTER KONTROL -->
+    <div class="master-card">
+      <h3>Alle lys</h3>
+      <div class="big-buttons">
+        <button class="big-btn btn-on"  onclick="allOn()">Tænd alle</button>
+        <button class="big-btn btn-off" onclick="allOff()">Sluk alle</button>
+      </div>
+      <div class="brightness-row">
+        <label>Lysstyrke</label>
+        <input type="range" min="1" max="100" value="80" id="master-brightness"
+          oninput="updateBrightness(this.value)" />
+        <span class="brightness-val" id="brightness-label">80%</span>
+      </div>
+    </div>
+
+    <!-- ETAGER / ZONER -->
+    <p class="section-title">Etage 1</p>
+
+    <div class="zone-card" onclick="toggleZone(this)">
+      <div class="zone-info">
+        <span class="zone-name"><span class="status-dot"></span>Gang A</span>
+        <span class="zone-sub">12 lys · tændt</span>
+      </div>
+      <div class="toggle-wrap">
+        <div class="toggle on"></div>
+        <span class="arrow">›</span>
+      </div>
+    </div>
+
+    <div class="zone-card" onclick="toggleZone(this)">
+      <div class="zone-info">
+        <span class="zone-name"><span class="status-dot"></span>Gang B</span>
+        <span class="zone-sub">10 lys · tændt</span>
+      </div>
+      <div class="toggle-wrap">
+        <div class="toggle on"></div>
+        <span class="arrow">›</span>
+      </div>
+    </div>
+
+    <div class="zone-card" onclick="toggleZone(this)">
+      <div class="zone-info">
+        <span class="zone-name"><span class="status-dot off"></span>Indgang Nord</span>
+        <span class="zone-sub">8 lys · slukket</span>
+      </div>
+      <div class="toggle-wrap">
+        <div class="toggle"></div>
+        <span class="arrow">›</span>
+      </div>
+    </div>
+
+    <p class="section-title">Etage 2</p>
+
+    <div class="zone-card" onclick="toggleZone(this)">
+      <div class="zone-info">
+        <span class="zone-name"><span class="status-dot"></span>Gang C</span>
+        <span class="zone-sub">14 lys · tændt</span>
+      </div>
+      <div class="toggle-wrap">
+        <div class="toggle on"></div>
+        <span class="arrow">›</span>
+      </div>
+    </div>
+
+    <div class="zone-card" onclick="toggleZone(this)">
+      <div class="zone-info">
+        <span class="zone-name"><span class="status-dot off"></span>Indgang Syd</span>
+        <span class="zone-sub">6 lys · slukket</span>
+      </div>
+      <div class="toggle-wrap">
+        <div class="toggle"></div>
+        <span class="arrow">›</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const PASSWORD = "lys2024";
+
+    function checkPassword() {
+      const input = document.getElementById('password-input').value;
+      if (input === PASSWORD) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('error-msg').textContent = '';
+      } else {
+        document.getElementById('error-msg').textContent = 'Forkert adgangskode. Prøv igen.';
+        document.getElementById('password-input').value = '';
+      }
+    }
+
+    document.getElementById('password-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') checkPassword();
+    });
+
+    function logout() {
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'block';
+      document.getElementById('password-input').value = '';
+    }
+
+    function allOn()  { alert('Tænder alle 100 lys... (Govee API kobles på senere)'); }
+    function allOff() { alert('Slukker alle 100 lys... (Govee API kobles på senere)'); }
+
+    function updateBrightness(val) {
+      document.getElementById('brightness-label').textContent = val + '%';
+    }
+
+    function toggleZone(card) {
+      const toggle = card.querySelector('.toggle');
+      const dot    = card.querySelector('.status-dot');
+      const sub    = card.querySelector('.zone-sub');
+      const isOn   = toggle.classList.contains('on');
+
+      toggle.classList.toggle('on');
+      dot.classList.toggle('off', isOn);
+
+      const count = sub.textContent.match(/\d+/)[0];
+      sub.textContent = count + ' lys · ' + (isOn ? 'slukket' : 'tændt');
+    }
+  </script>
+
+</body>
+</html>
